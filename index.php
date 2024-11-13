@@ -4,10 +4,11 @@ $currency = new Currency();
 $currencies = $currency->getCurrencies();
 $convertedAmount = null;
 
+$amount = $_POST['amount'] ?? 10000;
+$fromCurrency = $_POST['from_currency'] ?? 'USD';
+$toCurrency = $_POST['to_currency'] ?? 'USD';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $amount = $_POST['amount'];
-    $fromCurrency = $_POST['from_currency'];
-    $toCurrency = $_POST['to_currency'];
     $exchangeRate = $currency->getExchangeRate($fromCurrency, $toCurrency);
 
     if ($exchangeRate) {
@@ -63,22 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
                     <label for="amount" class="form-label visually-hidden">Amount</label>
-                    <input type="number" id="amount" name="amount" class="form-control" placeholder="Amount" value="10000">
+                    <input type="number" id="amount" name="amount" class="form-control" placeholder="Amount"
+                           value="<?= htmlspecialchars($amount) ?>">
                 </div>
-                <div class="col-md-3 text-center">
-                    <select class="form-select" name="from_currency">
+                <div class="col-md-3">
+                    <select class="form-select" id="to_currency" name="to_currency">
                         <?php foreach ($currencies as $currency): ?>
-                            <option value="<?= $currency->Ccy ?>"><?= $currency->Ccy ?></option>
+                            <option value="<?= $currency->Ccy ?>" <?= $currency->Ccy == $toCurrency ? 'selected' : '' ?>><?= $currency->Ccy ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-md-1 text-center">
-                    <span>⇆</span>
+                    <button id="swap-currencies" class="btn btn-link">⇆</button>
                 </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="to_currency">
+                <div class="col-md-3 text-center">
+                    <select class="form-select" id="from_currency" name="from_currency">
                         <?php foreach ($currencies as $currency): ?>
-                            <option value="<?= $currency->Ccy ?>"><?= $currency->Ccy ?></option>
+                            <option value="<?= $currency->Ccy ?>" <?= $currency->Ccy == $fromCurrency ? 'selected' : '' ?>><?= $currency->Ccy ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -98,5 +100,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         leaving you free to concentrate on your business.</p>
     <button class="btn btn-outline-danger">Find out more</button>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const swapButton = document.getElementById('swap-currencies');
+        const fromCurrencySelect = document.getElementById('from_currency');
+        const toCurrencySelect = document.getElementById('to_currency');
+
+        swapButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            const fromCurrency = fromCurrencySelect.value;
+            fromCurrencySelect.value = toCurrencySelect.value;
+            toCurrencySelect.value = fromCurrency;
+        });
+    });
+</script>
 </body>
 </html>

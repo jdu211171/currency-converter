@@ -18,7 +18,7 @@ class Currency
 
     public function getCurrencies()
     {
-        return $this->currencies;
+        return array_slice($this->currencies, 0, 10);
     }
 
     public function getExchangeRate($fromCurrency, $toCurrency): float|int|null
