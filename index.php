@@ -7,12 +7,15 @@ $convertedAmount = null;
 $amount = $_POST['amount'] ?? 10000;
 $fromCurrency = $_POST['from_currency'] ?? 'USD';
 $toCurrency = $_POST['to_currency'] ?? 'USD';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exchangeRate = $currency->getExchangeRate($fromCurrency, $toCurrency);
+    if ($fromCurrency !== $toCurrency) {
+        $exchangeRate = $currency->getExchangeRate($fromCurrency, $toCurrency);
 
-    if ($exchangeRate) {
-        $convertedAmount = $amount * $exchangeRate;
+        if ($exchangeRate) {
+            $convertedAmount = $amount * $exchangeRate;
+        }
     }
 }
 ?>
@@ -85,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
             </div>
+            <p id="error-message" class="text-danger mt-2"><?= $error ?></p>
             <p class="rate-info mt-2">1.00 USD = 12,862.73 UZS <i class="bi bi-info-circle"></i></p>
             <button type="submit" class="btn btn-primary btn-primary-custom mt-3">Convert</button>
         </form>
@@ -94,23 +98,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 <div class="info-section bg-light">
-    <h4 class="fw-bold">Let’s save you some time</h4>
-    <p class="text-muted">If you’ve got a target exchange rate in mind but haven’t got time to keep tabs on market
-        movement, then a firm order could be perfect for you. When your chosen rate is reached, we’ll act immediately,
-        leaving you free to concentrate on your business.</p>
-    <button class="btn btn-outline-danger">Find out more</button>
+    <h4 class="fw-bold">Let’s see the weather</h4>
+    <p class="text-muted">Stay updated with the latest weather information.</p>
+    <button class="btn btn-outline-danger"><a href="weather.php" class="btn">Find out more</a></button>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const swapButton = document.getElementById('swap-currencies');
         const fromCurrencySelect = document.getElementById('from_currency');
         const toCurrencySelect = document.getElementById('to_currency');
+        const form = document.querySelector('form');
+        const errorElement = document.getElementById('error-message');
 
         swapButton.addEventListener('click', function (e) {
             e.preventDefault();
             const fromCurrency = fromCurrencySelect.value;
             fromCurrencySelect.value = toCurrencySelect.value;
             toCurrencySelect.value = fromCurrency;
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (fromCurrencySelect.value === toCurrencySelect.value) {
+                e.preventDefault();
+                errorElement.textContent = 'Please select different currencies for conversion.';
+            }
         });
     });
 </script>

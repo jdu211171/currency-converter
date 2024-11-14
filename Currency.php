@@ -14,6 +14,11 @@ class Currency
         curl_close($ch);
         $decoded = json_decode($output);
         $this->currencies = $decoded;
+        array_unshift($this->currencies, (object)[
+            'Ccy' => 'UZS',
+            'Rate' => 1,
+            'CcyNm_EN' => 'Uzbekistan Som'
+        ]);
     }
 
     public function getCurrencies()
